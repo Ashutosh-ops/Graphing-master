@@ -957,7 +957,7 @@ uint32_t Graphing::read32(File& f) {
     return result;
 }
 
-uint8_t Graphing::showBMP(char* nm, int x, int y)
+uint8_t Graphing::showBMP(char* nm, int x, int y,MCUFRIEND_kbv &tft)
 {
     File bmpFile;
     int bmpWidth, bmpHeight;    // W+H in pixels
