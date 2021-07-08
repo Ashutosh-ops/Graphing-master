@@ -85,7 +85,7 @@ public:
     void DrawBarChartH(MCUFRIEND_kbv &, double , double , double , double , double , double , double , double , int , int , unsigned int , unsigned int , unsigned int , unsigned int , unsigned int , char* label, bool &);
     uint16_t read16(File&);
     uint32_t read32(File&);
-    uint8_t showBMP(char *, int , int);
+    uint8_t showBMP(char *, int , int,MCUFRIEND_kbv &);
     ~Graphing();
 };
 
