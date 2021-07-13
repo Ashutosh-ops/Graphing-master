@@ -1,12 +1,13 @@
 #ifndef Graphing_h
 #define Graphing_h
 #include "Arduino.h"
-#include <cstring>
+// #include <cstring>
+#include "string.h"
 #include <MCUFRIEND_kbv.h>
 #include "TouchScreen.h"
 #include "SD.h"
 #include <SPI.h>
-#include <bits/stdc++.h>
+// #include <bits/stdc++.h>
 
 /*______Define LCD pins (I have asigned the default values)_______*/
 #define YP A1 // must be an analog pin, use "An" notation!
@@ -24,6 +25,11 @@
 
 #define MINPRESSURE 10
 #define MAXPRESSURE 1000
+#define SWAP(a, b) {uint16_t tmp = a; a = b; b = tmp;}
+#define gain 20
+#define BMPIMAGEOFFSET 100
+#define PALETTEDEPTH   8
+#define BUFFPIXEL 20
 /*_______Assigned______*/
 
 /*____Calibrate TFT LCD_____*/
@@ -34,14 +40,14 @@
 /*______End of Calibration______*/
 
 /*______Assign names to colors and pressure_______*/
-#define WHITE 0x0000  //Black->White
-#define YELLOW 0x001F //Blue->Yellow
-#define CYAN 0xF800   //Red->Cyan
-#define PINK 0x07E0   //Green-> Pink
-#define RED 0x07FF    //Cyan -> Red
-#define GREEN 0xF81F  //Pink -> Green
-#define BLUE 0xFFE0   //Yellow->Blue
-#define BLACK 0xFFFF  //White-> Black
+#define WHITE 0xFFFF  //Black->White
+#define YELLOW 0xFFE0 //Blue->Yellow
+#define CYAN 0x07FF   //Red->Cyan 
+#define PINK 0xF81F   //Green-> Pink
+#define RED 0xF800    //Cyan -> Red
+#define GREEN 0x07E0  //Pink -> Green 
+#define BLUE 0x001F   //Yellow->Blue 
+#define BLACK 0x0000  //White-> Black
 #define PURPLE 0x4A49
 #define LTPURPLE 0x8200
 
@@ -55,6 +61,8 @@ protected:
     int X, Y, l, k1 = 0;                               //Stores the touch co-ordinates
     TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300); //300 is the sensitivity
     TSPoint tp;
+    float refer = 4.789;
+    float vdff  = 0.0;
     double peak = 0;
     bool graph_1 = true;
     bool graph_2 = true;
@@ -79,14 +87,21 @@ public:
     void peak_view(double ,MCUFRIEND_kbv&);
     void click_event();
     TSPoint waitTouch();
-    char *Format(double , int, int);
+    void Format(double , int, int, MCUFRIEND_kbv&);
     void DrawDial(MCUFRIEND_kbv &, int , int , int , double , double , double , double , double , int , int , unsigned int , unsigned int , unsigned int , char* , bool &);
     void DrawBarChartV(MCUFRIEND_kbv &, double , double , double , double , double , double , double , double , int , int , unsigned int , unsigned int , unsigned int , unsigned int , unsigned int , char* , bool &);
     void DrawBarChartH(MCUFRIEND_kbv &, double , double , double , double , double , double , double , double , int , int , unsigned int , unsigned int , unsigned int , unsigned int , unsigned int , char* label, bool &);
     uint16_t read16(File&);
     uint32_t read32(File&);
-    uint8_t showBMP(char *, int , int,MCUFRIEND_kbv &);
+    uint8_t showBMP(char *, int , int, MCUFRIEND_kbv&);
+    float main_var();
+    float jsd1();
+    float jsd2();
+    float v24op();
+    float v48op();
+    float current();
     ~Graphing();
 };
 
 #endif
+
