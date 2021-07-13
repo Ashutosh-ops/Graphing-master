@@ -1,0 +1,46 @@
+#######################################
+# Syntax Coloring Map For Graphing
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+Graphing	KEYWORD1	~Graphing
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+PinSetup	KEYWORD2
+Solid_Border	KEYWORD2
+nav_init	KEYWORD2
+CURRENT_GRAPH   	KEYWORD2
+v48_GRAPH	KEYWORD2
+v24_GRAPH	KEYWORD2
+JSD1_GRAPH 	KEYWORD2
+JSD2_GRAPH	KEYWORD2
+MAIN_GRAPH	KEYWORD2
+HELP_MANUAL	KEYWORD2
+dial_print	KEYWORD2
+peak_view	KEYWORD2
+click_event	KEYWORD2
+waitTouch	KEYWORD2
+Format		KEYWORD2
+DrawDial	KEYWORD2
+DrawBarChartV	KEYWORD2
+DrawBarChartH	KEYWORD2
+read16			KEYWORD2
+read32	    KEYWORD2
+showBMP	    KEYWORD2
+main_var	KEYWORD2
+jsd1	    KEYWORD2
+jsd2	    KEYWORD2
+v24op	    KEYWORD2
+v48op	    KEYWORD2
+current	    KEYWORD2
+
+
+#######################################
+# Non-Constants (LITERAL1)
+#######################################
+
