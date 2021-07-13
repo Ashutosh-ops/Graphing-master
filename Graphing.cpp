@@ -90,7 +90,7 @@ void Graphing::v48_GRAPH(MCUFRIEND_kbv& tft)
         graph_1 = true;
         tft.fillScreen(WHITE);
 
-        Solid_Border();
+        Solid_Border(tft);
         while (1)
         {
           Serial.println("before dial1");
@@ -150,7 +150,7 @@ void  Graphing::v24_GRAPH(MCUFRIEND_kbv& tft)
         graph_1 = true;
         tft.fillScreen(WHITE);
 
-        Solid_Border();
+        Solid_Border(tft);
         while (1)
         {
           Serial.println("before dial1");
@@ -244,9 +244,9 @@ void Graphing::MAIN_GRAPH(MCUFRIEND_kbv& tft)
           Serial.print(',');
           Serial.println(Y);
 
-          if (Y > 40 && Y < 100)
+          if (Y > 30 && Y < 100)
           {
-            if (X > 201 && X < 254)
+            if (X > 195 && X < 254)
             {
               return;
             }
@@ -273,7 +273,7 @@ void Graphing::JSD1_GRAPH(MCUFRIEND_kbv& tft)
         graph_1 = true;
         tft.fillScreen(WHITE);
 
-        Solid_Border();
+        Solid_Border(tft);
         while (1)
         {
           Serial.println("before dial1");
@@ -554,7 +554,7 @@ void Graphing::dial_print(double l, double h, int choice,MCUFRIEND_kbv& tft)
 
 
 /*_________peak_view()-starts___________*/
-void Graphing::peak_view(double peak,MCUFRIEND_kbv& tft)
+void Graphing::peak_view(double peak, MCUFRIEND_kbv& tft)
 {
   tft.setRotation(1);
   tft.setTextSize(2);
@@ -615,6 +615,9 @@ TSPoint Graphing::waitTouch()
 
 
 
+
+/*Close Switch Code*/
+
 /*
   This method will draw a vertical bar graph for single input
   it has a rather large arguement list and is as follows
@@ -644,13 +647,6 @@ void Graphing::DrawBarChartV(MCUFRIEND_kbv &d, double x, double y, double w, dou
   double stepval, range;
   double my, level;
   double i, data;
-  
-  int addpad = 0;
-  char sbuf2[40];
-  char sbuf[40];
-  char msg_out[3] = " ";
-  unsigned slen;
-  
   // draw the border, scale, and label once
   // avoid doing this on every update to minimize flicker
   if (redraw == true)
@@ -675,16 +671,7 @@ void Graphing::DrawBarChartV(MCUFRIEND_kbv &d, double x, double y, double w, dou
       d.setTextColor(textcolor, backcolor);
       d.setCursor(x + w + 12, my - 3);
       data = hival - (i * (inc / stepval));
-
-      
-      (dtostrf(data, dec, dig, sbuf));
-      slen = (unsigned)strlen(sbuf);
-      for (addpad = 1; addpad <= dec + dig - slen; addpad++)
-      {
-    //    condata = " " + condata;
-        strcat(sbuf,msg_out);
-      }
-      d.println(sbuf);
+      Format(data, dig, dec,d);
     }
   }
   // compute level of bar graph that is scaled to the  height and the hi and low vals
@@ -698,20 +685,7 @@ void Graphing::DrawBarChartV(MCUFRIEND_kbv &d, double x, double y, double w, dou
   d.setTextColor(textcolor, backcolor);
   d.setTextSize(2);
   d.setCursor(x, y - h - 23);
-
-  addpad = 0;
-//  char sbuf[40];
-//  char msg_out[3] = " ";
-  
-  (dtostrf(curval, dec, dig, sbuf2));
-
-  slen = (unsigned)strlen(sbuf2);
-  for (addpad = 1; addpad <= dec + dig - slen; addpad++)
-  {
-//    condata = " " + condata;
-    strcat(sbuf2,msg_out);
-  }
-  d.println(sbuf2);
+  Format(curval, dig, dec,d);
 }
 
 /*
@@ -758,7 +732,7 @@ void Graphing::DrawDial(MCUFRIEND_kbv &d, int cx, int cy, int r, double loval, d
   d.setTextSize(2);
   d.setTextColor(textcolor, dialcolor);
   d.setCursor(cx - 25, cy + 20);
-  d.println(Format(curval, dig, dec));
+  Format(curval, dig, dec,d);
   // center the scale about the vertical axis--and use this to offset the needle, and scale text
   offset = (270 + sa / 2) * degtorad;
   // find hte scale step value based on the hival low val and the scale sweep angle
@@ -782,7 +756,7 @@ void Graphing::DrawDial(MCUFRIEND_kbv &d, int cx, int cy, int r, double loval, d
     d.setTextColor(textcolor, dialcolor);
     d.setCursor(tx - 10, ty);
     data = hival - (i * (inc / stepval));
-    d.println(Format(data, dig, dec));
+    Format(data, dig, dec,d);
   }
   // compute and draw the needle
   angle = (sa * (1 - (((curval - loval) / (hival - loval)))));
@@ -851,12 +825,6 @@ void Graphing::DrawBarChartH(MCUFRIEND_kbv &d, double x, double y, double w, dou
   double mx, level;
   double i, data;
 
-  int addpad = 0;
-  char sbuf2[40];
-  char sbuf[40];
-  char msg_out[3] = " ";
-  unsigned slen;
-
   // draw the border, scale, and label once
   // avoid doing this on every update to minimize flicker
   // draw the border and scale
@@ -881,16 +849,7 @@ void Graphing::DrawBarChartH(MCUFRIEND_kbv &d, double x, double y, double w, dou
       // addling a small value to eliminate round off errors
       // this val may need to be adjusted
       data = (i * (inc / stepval)) + loval + 0.00001;
-
-      (dtostrf(data, dec, dig, sbuf));
-
-      slen = (unsigned)strlen(sbuf);
-      for (addpad = 1; addpad <= dec + dig - slen; addpad++)
-      {
-    //    condata = " " + condata;
-        strcat(sbuf,msg_out);
-      }
-      d.println(sbuf);
+      Format(data, dig, dec, d);
     }
   }
   // compute level of bar graph that is scaled to the width and the hi and low vals
@@ -904,37 +863,32 @@ void Graphing::DrawBarChartH(MCUFRIEND_kbv &d, double x, double y, double w, dou
   d.setTextColor(textcolor, backcolor);
   d.setTextSize(2);
   d.setCursor(x + w + 10, y + 5);
-  
-  addpad = 0;
-//  char sbuf[40];
-//  char msg_out[3] = " ";
-  
-  (dtostrf(curval, dec, dig, sbuf2));
-
-  slen = (unsigned)strlen(sbuf2);
-  for (addpad = 1; addpad <= dec + dig - slen; addpad++)
-  {
-//    condata = " " + condata;
-    strcat(sbuf2,msg_out);
-  }
-  d.println(sbuf2);
+  Format(curval, dig, dec, d);
 }
 
-char *Graphing::Format(double val, int dec, int dig)
+void Graphing::Format(double val, int dec, int dig, MCUFRIEND_kbv &d)
 {
   int addpad = 0;
-  char sbuf[40];
-  char msg_out[3] = " ";
+  char sbuf[20];
+  char condata[40];
+  char* condat = (dtostrf(val, dec, dig, sbuf));
+  Serial.print("condat: ");
+  Serial.println(condat);
+  strcpy(condata,condat);
+  Serial.print("condata: ");
+  Serial.println(condata);
   
-  (dtostrf(val, dec, dig, sbuf));
-
-  unsigned slen = (unsigned)strlen(sbuf);
+  int slen = strlen(condat);
+  Serial.print("slen: ");
+  Serial.println(slen);
   for (addpad = 1; addpad <= dec + dig - slen; addpad++)
   {
 //    condata = " " + condata;
-    strcat(sbuf,msg_out);
+    strcat(condata," ");
   }
-  return (sbuf);
+  Serial.print("condata__: ");
+  Serial.println(condata);
+  d.println(condata);
 }
 /*___________End barV_________*/
 
@@ -957,7 +911,7 @@ uint32_t Graphing::read32(File& f) {
     return result;
 }
 
-uint8_t Graphing::showBMP(char* nm, int x, int y,MCUFRIEND_kbv &tft)
+uint8_t Graphing::showBMP(char nm[], int x, int y, MCUFRIEND_kbv &tft)
 {
     File bmpFile;
     int bmpWidth, bmpHeight;    // W+H in pixels
@@ -967,10 +921,10 @@ uint8_t Graphing::showBMP(char* nm, int x, int y,MCUFRIEND_kbv &tft)
     uint8_t sdbuffer[3 * BUFFPIXEL];    // pixel in buffer (R+G+B per pixel)
     uint16_t lcdbuffer[(1 << PALETTEDEPTH) + BUFFPIXEL], *palette = NULL;
     uint8_t bitmask, bitshift;
-    boolean flip = true;        // BMP is stored bottom-to-top
+    bool flip = true;        // BMP is stored bottom-to-top
     int w, h, row, col, lcdbufsiz = (1 << PALETTEDEPTH) + BUFFPIXEL, buffidx;
     uint32_t pos;               // seek position
-    boolean is565 = false;      //
+    bool is565 = false;      //
 
     uint16_t bmpID;
     uint16_t n;                 // blocks read
@@ -1097,4 +1051,104 @@ uint8_t Graphing::showBMP(char* nm, int x, int y,MCUFRIEND_kbv &tft)
 }
 
 /*_______BMP printfunction --ends_______*/
+
+
+/***main_voltage()****/
+float Graphing::main_var()
+{
+  float R1 = 100000, R2 = 10000, Req = R1 + R2;
+  float main_var = 0;
+  int local = analogRead(A9);
+  main_var = (local*refer)/1024.0;
+  Serial.print("MAIN_Vin : ");
+  Serial.println(main_var);
+  float Vapp = main_var * 11;
+  Serial.print("MAIN_Vapp : ");
+  Serial.println(Vapp);
+  /*Read value from analog*/
+  return Vapp;
+}
+
+/***jsd1_voltage()****/
+float Graphing::jsd1()
+{
+  float R1 = 100000, R2 = 10000, Req = R1 + R2;
+  float jsd1_var = 0;
+  int local = analogRead(A10);
+  jsd1_var = (local*refer)/1024.0;
+  Serial.print("JSD1_Vin : ");
+  Serial.println(jsd1_var);
+  float Vapp = jsd1_var * 11;
+  Serial.print("JSD1_Vapp : ");
+  Serial.println(Vapp);
+  /*Read value from analog*/
+  return Vapp;
+}
+
+/***jsd2_voltage()****/
+float Graphing::jsd2()
+{
+  float R1 = 100000, R2 = 10000, Req = R1 + R2;
+  float jsd2_var = 0;
+  int local = analogRead(A11);
+  jsd2_var = (local*refer)/1024.0;
+  Serial.print("JSD2_Vin : ");
+  Serial.println(jsd2_var);
+  float Vapp = jsd2_var * 11;
+  Serial.print("JSD2_Vapp : ");
+  Serial.println(Vapp);
+  /*Read value from analog*/
+  return Vapp;
+}
+
+/***_________v24op_voltage()____-Returns voltage at 24v pins at run-time_____****/
+float Graphing::v24op()
+{
+  float R1 = 100000, R2 = 10000, Req = R1 + R2;
+  float v24op_var = 0;
+  int local = analogRead(A8);
+  v24op_var = (local*refer)/1024.0;
+  Serial.print("24_V : ");
+  Serial.println(v24op_var);
+  float Vapp = v24op_var *11;
+  Serial.print("24v_Vapp : ");
+  Serial.println(Vapp);
+  /*Read value from analog*/
+  return Vapp;
+}
+
+/***_________v48op_voltage()________-Returns voltage at 48v pins at run-time_____****/
+float Graphing::v48op()
+{
+  float R1 = 100000, R2 = 10000, Req = R1 + R2;
+  float v48op_var = 0;
+  int local = analogRead(A12);
+  v48op_var = (local*refer)/1024.0;
+  Serial.print("48_V : ");
+  Serial.println(v48op_var);
+  float Vapp = v48op_var * 11;
+  Serial.print("48v_Vapp : ");
+  Serial.println(Vapp);
+  /*Read value from analog*/
+  return Vapp;
+}
+/***_________v48op_voltage()___-ends_________****/
+
+/***_________current()____-Returns amp. at run-time_____****/
+float Graphing::current()
+{
+  int AR = analogRead(A13);
+  Serial.print("AR: ");
+  Serial.println(AR);
+  float Vout = (AR*refer)/1024.0;
+  Serial.print("IC O/P: ");
+  Serial.println(Vout);
+  vdff = (Vout-2.5)/gain;
+  float I = ((vdff/75.0)*1e6);
+  Serial.print("Current = ");
+  Serial.println(I);
+  return I;
+}
+/***_________current()____ends_____****/
+
 
